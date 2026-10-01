@@ -6,7 +6,6 @@ class Vec3 {
         double x;
         double y;
         double z;
-
         Vec3();
         Vec3(double x, double y, double z);
         Vec3 operator+(const Vec3& b);

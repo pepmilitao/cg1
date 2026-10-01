@@ -1,6 +1,7 @@
 #include "include/Camera.h"
 #include "include/Scene.h"
 #include "include/Sphere.h"
+#include "include/Plane.h"
 #include "include/Vec3.h"
 #include "include/Light.h"
 #include <SDL3/SDL.h>
@@ -19,7 +20,7 @@ int main(int argc, char* argv[]) {
     SDL_Event event;
 
     Camera eye(Vec3 {0, 0, 0});
-    Scene scene(&window, &renderer, 16.0 / 9.0, 800, 2.0, 1.0, eye);
+    Scene scene(&window, &renderer, 1.0, 500, 0.6, 0.3, eye);
 
     bool isRunning = true;
 
@@ -33,14 +34,19 @@ int main(int argc, char* argv[]) {
     }
 
     // Elements of the scene
-    std::shared_ptr<Sphere> sphere1 = std::make_shared<Sphere>(0.5, Vec3 {-1.3, 0.0, -5.5}, Color(Vec3 {1.0, 0.0, 0.0}, Vec3 {0.5, 0.5, 0.5}, 5.0));
-    std::shared_ptr<Sphere> sphere2 = std::make_shared<Sphere>(0.5, Vec3 {0.7, 0.0, -1.0}, Color(Vec3 {0.0, 1.0, 0.0}, Vec3 {0.5, 0.5, 0.5}, 5.0));
-    std::shared_ptr<Light> light1 = std::make_shared<Light>(Vec3 {0, 5, -3}, Vec3 {0.7, 0.7, 0.7});
-    std::shared_ptr<Light> light2 = std::make_shared<Light>(Vec3 {0, -5, 0}, Vec3 {0.7, 0.7, 0.7});
-    scene.addLight(light1);
-    scene.addLight(light2);
-    scene.addObject(sphere1);
-    scene.addObject(sphere2);
+    Vec3 k_sphere(0.7, 0.2, 0.2);
+    Vec3 k_plane_c(0.2, 0.7, 0.2);
+    Vec3 k_plane_f(0.3, 0.3, 0.7);
+    Vec3 k_black(0, 0, 0);
+    std::shared_ptr<Sphere> sphere = std::make_shared<Sphere>(0.4, Vec3 {0, 0, -1}, Color(k_sphere, k_sphere, k_sphere, 10.0));
+    std::shared_ptr<Plane> plane_c = std::make_shared<Plane>(Vec3 {0, -0.4, 0}, Vec3 {0, 1, 0}, Color(k_plane_c, k_black, k_plane_c, 1.0));
+    std::shared_ptr<Plane> plane_f = std::make_shared<Plane>(Vec3 {0, 0, -2}, Vec3 {0, 0, 1}, Color(k_plane_f, k_black, k_plane_f, 1.0));
+    std::shared_ptr<Light> light = std::make_shared<Light>(Vec3 {0, 0.6, -0.3}, Vec3 {0.7, 0.7, 0.7});
+    scene.addLight(light);
+    scene.addObject(sphere);
+    scene.addObject(plane_c);
+    scene.addObject(plane_f);
+    scene.setAmbientLight(Vec3 {0.3, 0.3, 0.3});
 
     // Main loop
     while (isRunning) {

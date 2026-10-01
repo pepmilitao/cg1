@@ -24,6 +24,7 @@ class Scene {
         Vec3 pixel_delta_horizontal;
         Vec3 pixel_delta_vertical;
         Vec3 pixel00_loc;
+        Vec3 ambient_light;
         Vec3 pixelColor(std::shared_ptr<Shape> s, Vec3& dir, Vec3 point);
 
     public:
@@ -32,5 +33,6 @@ class Scene {
         int getHeight();
         void addObject(std::shared_ptr<Shape> object);
         void addLight(std::shared_ptr<Light> light);
+        void setAmbientLight(Vec3 light);
         void drawFrame();
 };

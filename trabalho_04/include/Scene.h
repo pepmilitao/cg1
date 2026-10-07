@@ -25,7 +25,7 @@ class Scene {
         Vec3 pixel_delta_vertical;
         Vec3 pixel00_loc;
         Vec3 ambient_light;
-        Vec3 pixelColor(std::shared_ptr<Shape> s, Vec3& dir, Vec3 point);
+        Vec3 pixelColor(std::shared_ptr<Shape> s, Vec3& dir, Interseption interseption);
 
     public:
         Scene(SDL_Window** window, SDL_Renderer** renderer, double aspect_ratio, int window_width, double viewport_height, double distance_viewport, Camera eye);

@@ -10,6 +10,5 @@ class Plane : public Shape{
     public:
         Vec3 known_point;
         Plane(Vec3 known_point, Vec3 normal, Color color);
-        Vec3 getNormal(Vec3& point) override;
-        double intercepts(Ray& ray) override;
+        bool intercepts(Ray& ray, Interseption& interseption) override;
 };

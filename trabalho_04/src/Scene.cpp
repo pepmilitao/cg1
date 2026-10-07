@@ -18,26 +18,28 @@ int Scene::getHeight() { return window_height; }
 void Scene::addObject(std::shared_ptr<Shape> object) { objects.push_back(object); }
 void Scene::addLight(std::shared_ptr<Light> light) { lights.push_back(light); }
 void Scene::setAmbientLight(Vec3 light) { ambient_light = light; }
-Vec3 Scene::pixelColor(std::shared_ptr<Shape> s, Vec3& dir, Vec3 point) {
+Vec3 Scene::pixelColor(std::shared_ptr<Shape> s, Vec3& dir, Interseption interseption) {
     Vec3 e_ret = ambient_light.cross_at(s->color.k_amb);
     for (const std::shared_ptr<Light>& light : lights) {
         // Verificando se não tem sombra
-        Vec3 l = (light->position - point);
-        Ray light_ray(point, l);
+        Vec3 l = (light->position - interseption.point);
+        Ray light_ray(interseption.point, l);
         bool isShadow = false;
         for (const std::shared_ptr<Shape>& object : objects) {
             if (object != s) {
-                double t = object->intercepts(light_ray);
-                if (t > 0.0 and t < 1.0) {
-                    isShadow = true;
-                    break;
+                Interseption interseption_shadow;
+                if (object->intercepts(light_ray, interseption_shadow)) {
+                    if (interseption_shadow.t < 1.0) {
+                        isShadow = true;
+                        break;
+                    }
                 }
             }
         }
         if (!isShadow) {
             l = l.norm();
             Vec3 v = (dir * -1.0).norm();
-            Vec3 n = s->getNormal(point);
+            Vec3 n = interseption.normal;
             Vec3 r = n * (2.0 * (l.dot(n))) - l;
             double nl = n.dot(l);
             double rv = r.dot(v);
@@ -60,10 +62,10 @@ void Scene::drawFrame() {
             double closest_so_far = INFINITY;
             Vec3 color(0, 0, 0);
             for (const std::shared_ptr<Shape>& object : objects) {
-                double t = object->intercepts(r);
-                if (t >= 0.0 and t < closest_so_far) {
-                    closest_so_far = t;
-                    color = pixelColor(object, ray_direction, r.at(t));
+                Interseption interseption;
+                if (object->intercepts(r, interseption) and interseption.t < closest_so_far) {
+                    closest_so_far = interseption.t;
+                    color = pixelColor(object, ray_direction, interseption);
                 }
             }
             SDL_SetRenderDrawColor(*renderer, int(color.x * 255.999), int(color.y * 255.999), int(color.z * 255.999), SDL_ALPHA_OPAQUE); // Sphere color
